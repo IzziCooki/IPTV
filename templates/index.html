@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPTV Stream Search</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4">IPTV Stream Search - US Channels</h1>
+        <div id="loading" class="alert alert-info" style="display: none;">
+            Fetching latest data for US channels... (this may take a moment)
+        </div>
+
+        <div id="content" style="display: none;">
+            <form action="/" method="post">
+                <div class="form-group">
+                    <label for="category">Select a Category:</label>
+                    <select class="form-control" id="category" name="category">
+                        {% for category in categories %}
+                            <option value="{{ category }}" {% if selected_category == category %}selected{% endif %}>{{ category }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="search">Search Term:</label>
+                    <input type="text" class="form-control" id="search" name="search" value="{{ search_query }}">
+                </div>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+
+            {% if results %}
+                <h2 class="my-4">Found {{ results|length }} results:</h2>
+                <ul class="list-group">
+                    {% for result in results %}
+                        <li class="list-group-item">
+                            <h5>{{ result.title }} ({{ result.quality }})</h5>
+                            <p>URL: <a href="{{ result.url }}" target="_blank">{{ result.url }}</a></p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% elif results is not none %}
+                <p class="alert alert-warning mt-4">No streams found matching that criteria.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const content = document.getElementById("content");
+            const loading = document.getElementById("loading");
+
+            // Show loading indicator immediately, then content after a delay
+            // This is a simple way to handle the initial data load indication
+            if (content.style.display === 'none') {
+                loading.style.display = 'block';
+                setTimeout(() => {
+                    loading.style.display = 'none';
+                    content.style.display = 'block';
+                }, 3000); 
+            }
+        });
+    </script>
+</body>
+</html>
