@@ -8,7 +8,12 @@
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="/browse">All</a></li>
                 {% if country %}
-                <li class="breadcrumb-item active">{{ selected_country_name }}</li>
+                    {% if subdivision %}
+                    <li class="breadcrumb-item"><a href="{{ url_for('browse', country=country) }}">{{ selected_country_name }}</a></li>
+                    <li class="breadcrumb-item active">{{ selected_subdivision_name }}</li>
+                    {% else %}
+                    <li class="breadcrumb-item active">{{ selected_country_name }}</li>
+                    {% endif %}
                 {% endif %}
                 {% if category %}
                 <li class="breadcrumb-item active">{{ selected_category_name }}</li>
@@ -43,6 +48,23 @@
             {% if category %}
             <input type="hidden" name="category" value="{{ category }}">
             {% endif %}
+            {% if subdivision %}
+            <input type="hidden" name="subdivision" value="{{ subdivision }}">
+            {% endif %}
+            
+            {% if available_subdivisions %}
+            <div class="mb-3">
+                <select class="form-select bg-dark text-light border-secondary" onchange="location = this.value;">
+                    <option value="{{ url_for('browse', country=country, category=category, search=search) }}">All Regions</option>
+                    {% for sub in available_subdivisions %}
+                    <option value="{{ url_for('browse', country=country, category=category, search=search, subdivision=sub.code) }}" {% if subdivision == sub.code %}selected{% endif %}>
+                        {{ sub.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+
             <div class="input-group">
                 <input type="text" class="form-control bg-dark text-light border-secondary" name="search" placeholder="Search within this list..." value="{{ search or '' }}">
                 <button class="btn btn-primary" type="submit">Filter</button>
