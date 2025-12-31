@@ -33,6 +33,24 @@
     </div>
 </div>
 
+<!-- Refine Search within current context -->
+<div class="row mb-4">
+    <div class="col-md-6 mx-auto">
+        <form action="/browse" method="get">
+            {% if country %}
+            <input type="hidden" name="country" value="{{ country }}">
+            {% endif %}
+            {% if category %}
+            <input type="hidden" name="category" value="{{ category }}">
+            {% endif %}
+            <div class="input-group">
+                <input type="text" class="form-control bg-dark text-light border-secondary" name="search" placeholder="Search within this list..." value="{{ search or '' }}">
+                <button class="btn btn-primary" type="submit">Filter</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 {% if not channels %}
 <div class="alert alert-warning">
     No channels found matching your criteria. <a href="/browse" class="alert-link">Clear filters</a>.
