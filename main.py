@@ -73,12 +73,20 @@ class IPTVManager:
 
         # Then, search by title within the filtered list
         for s in streams_to_search:
-            title = s.get('title', '').lower()
-            if query in title:
+            channel_id = s.get('channel')
+            channel_info = self.channels.get(channel_id, {})
+            channel_name = channel_info.get('name', '').lower()
+            stream_title = s.get('title', '').lower()
+
+            if query in channel_name or query in stream_title:
+                display_title = channel_info.get('name', 'Unknown Channel')
+                if s.get('title') and s.get('title').lower() != display_title.lower():
+                    display_title += f" - {s.get('title')}"
+
                 results.append({
-                    'title': s.get('title'),
+                    'title': display_title,
                     'url': s.get('url'),
-                    'quality': s.get('quality', 'N/A')
+                    'quality': s.get('height', 'N/A')
                 })
         
         return results
@@ -107,7 +115,8 @@ def main():
     while True:
         print("\nIPTV Stream Search - US Channels")
         print("1. Select a Category to browse")
-        print("2. Exit")
+        print("2. Search all channels")
+        print("3. Exit")
         
         choice = input("\nSelect an option: ")
 
@@ -136,6 +145,11 @@ def main():
                 print("Please enter a valid number.")
 
         elif choice == '2':
+            query = input("Enter search term: ")
+            results = iptv.search(query)
+            iptv.display_results(results)
+
+        elif choice == '3':
             break
         else:
             print("Invalid selection.")

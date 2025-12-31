@@ -1,66 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IPTV Stream Search</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
-    <div class="container">
-        <h1 class="my-4">IPTV Stream Search - US Channels</h1>
-        <div id="loading" class="alert alert-info" style="display: none;">
-            Fetching latest data for US channels... (this may take a moment)
-        </div>
+{% extends "base.html" %}
 
-        <div id="content" style="display: none;">
-            <form action="/" method="post">
-                <div class="form-group">
-                    <label for="category">Select a Category:</label>
-                    <select class="form-control" id="category" name="category">
-                        {% for category in categories %}
-                            <option value="{{ category }}" {% if selected_category == category %}selected{% endif %}>{{ category }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="search">Search Term:</label>
-                    <input type="text" class="form-control" id="search" name="search" value="{{ search_query }}">
-                </div>
-                <button type="submit" class="btn btn-primary">Search</button>
-            </form>
-
-            {% if results %}
-                <h2 class="my-4">Found {{ results|length }} results:</h2>
-                <ul class="list-group">
-                    {% for result in results %}
-                        <li class="list-group-item">
-                            <h5>{{ result.title }} ({{ result.quality }})</h5>
-                            <p>URL: <a href="{{ result.url }}" target="_blank">{{ result.url }}</a></p>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% elif results is not none %}
-                <p class="alert alert-warning mt-4">No streams found matching that criteria.</p>
-            {% endif %}
+{% block content %}
+<div class="row align-items-center mb-5">
+    <div class="col-lg-8">
+        <h1 class="display-4 fw-bold">Free Global TV</h1>
+        <p class="lead">Watch thousands of public TV channels from around the world.</p>
+        <div class="d-flex gap-3">
+            <a href="/countries" class="btn btn-primary btn-lg"><i class="bi bi-globe"></i> Browse by Country</a>
+            <a href="/categories" class="btn btn-outline-light btn-lg"><i class="bi bi-grid"></i> Categories</a>
         </div>
     </div>
+    <div class="col-lg-4 text-center d-none d-lg-block">
+        <i class="bi bi-broadcast text-primary" style="font-size: 8rem;"></i>
+    </div>
+</div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const content = document.getElementById("content");
-            const loading = document.getElementById("loading");
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-center p-3">
+            <h3 class="fw-bold text-primary">{{ total_channels }}</h3>
+            <p class="text-muted mb-0">Channels</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center p-3">
+            <h3 class="fw-bold text-success">{{ total_countries }}</h3>
+            <p class="text-muted mb-0">Countries</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center p-3">
+            <h3 class="fw-bold text-info">{{ total_streams }}</h3>
+            <p class="text-muted mb-0">Live Streams</p>
+        </div>
+    </div>
+</div>
 
-            // Show loading indicator immediately, then content after a delay
-            // This is a simple way to handle the initial data load indication
-            if (content.style.display === 'none') {
-                loading.style.display = 'block';
-                setTimeout(() => {
-                    loading.style.display = 'none';
-                    content.style.display = 'block';
-                }, 3000); 
-            }
-        });
-    </script>
-</body>
-</html>
+<h2 class="mb-4"><i class="bi bi-star-fill text-warning"></i> Featured Channels (US News)</h2>
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+    {% for channel in featured %}
+    <div class="col">
+        <div class="card h-100">
+            {% if channel.logo %}
+            <img src="{{ channel.logo }}" class="card-img-top p-3" alt="{{ channel.name }}" style="height: 120px; object-fit: contain; background: #fff;">
+            {% else %}
+            <div class="card-img-top p-3 d-flex align-items-center justify-content-center bg-secondary text-white" style="height: 120px;">
+                <span class="fs-1">{{ channel.name[:2] }}</span>
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title text-truncate">{{ channel.name }}</h5>
+                <p class="card-text small text-muted">
+                    {% if channel.categories %}
+                    <span class="badge bg-secondary">{{ channel.categories[0] | replace('_', ' ') | title }}</span>
+                    {% endif %}
+                </p>
+                <a href="/channel/{{ channel.id }}" class="btn btn-primary w-100 stretched-link">Watch Info</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

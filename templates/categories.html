@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="mb-4">Browse by Category</h1>
+
+<div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+    {% for cat in categories %}
+    <div class="col">
+        <a href="/browse?category={{ cat.id }}" class="card h-100 text-decoration-none">
+            <div class="card-body">
+                <h5 class="card-title text-capitalize mb-1">{{ cat.name }}</h5>
+                <p class="card-text small text-muted">Browse channels</p>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

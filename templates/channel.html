@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card p-4 text-center">
+            {% if info.logo %}
+            <img src="{{ info.logo }}" class="img-fluid mb-3 bg-white rounded p-2" alt="{{ info.name }}" style="max-height: 200px;">
+            {% else %}
+            <div class="bg-secondary text-white rounded p-5 mb-3">
+                <span class="display-1">{{ info.name[:2] }}</span>
+            </div>
+            {% endif %}
+            
+            <h2 class="fw-bold">{{ info.name }}</h2>
+            
+            <div class="mt-3 text-start">
+                <p><strong>Country:</strong> {{ country_name }} ({{ info.country }})</p>
+                {% if info.network %}
+                <p><strong>Network:</strong> {{ info.network }}</p>
+                {% endif %}
+                {% if info.website %}
+                <p><strong>Website:</strong> <a href="{{ info.website }}" target="_blank">{{ info.website }}</a></p>
+                {% endif %}
+                {% if category_names %}
+                <p><strong>Categories:</strong> {{ category_names | join(', ') }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <h3 class="mb-3">Available Streams</h3>
+        
+        {% if not streams %}
+        <div class="alert alert-danger">
+            No active streams found for this channel.
+        </div>
+        {% else %}
+        
+        <div class="list-group">
+            {% for stream in streams %}
+            <div class="list-group-item list-group-item-action bg-dark text-light border-secondary p-3">
+                <div class="d-flex w-100 justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-1">
+                            {% if stream.title %}
+                                {{ stream.title }}
+                            {% else %}
+                                Stream #{{ loop.index }}
+                            {% endif %}
+                        </h5>
+                        <p class="mb-1 text-muted small">Quality: {{ stream.height or 'Auto' }} | Format: .m3u8</p>
+                    </div>
+                    <a href="/watch?url={{ stream.url }}&title={{ info.name }}{% if stream.title %} - {{ stream.title }}{% endif %}" class="btn btn-success">
+                        <i class="bi bi-play-fill"></i> Play Now
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="mt-4">
+            <h5>External Players</h5>
+            <p class="text-muted">If the web player doesn't work, copy the URL below into VLC or another IPTV player.</p>
+            {% for stream in streams %}
+            <div class="input-group mb-2">
+                <span class="input-group-text bg-secondary text-light border-secondary">URL</span>
+                <input type="text" class="form-control bg-dark text-light border-secondary" value="{{ stream.url }}" readonly>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

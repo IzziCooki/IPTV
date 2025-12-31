@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block head %}
+<!-- HLS.js -->
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<style>
+    #video-container {
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+        background: #000;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+    video {
+        width: 100%;
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="text-center mb-4">
+    <h2>Now Playing: <span class="text-primary">{{ title }}</span></h2>
+    <a href="javascript:history.back()" class="btn btn-outline-light btn-sm mt-2"><i class="bi bi-arrow-left"></i> Back to Channel</a>
+</div>
+
+<div id="video-container">
+    <video id="video" controls autoplay></video>
+</div>
+
+<div class="text-center mt-3">
+    <p class="text-muted small">Stream URL: {{ url }}</p>
+    <div id="status" class="badge bg-secondary">Initializing...</div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    var video = document.getElementById('video');
+    var videoSrc = "{{ url }}";
+    var statusBadge = document.getElementById('status');
+
+    if (Hls.isSupported()) {
+        var hls = new Hls();
+        hls.loadSource(videoSrc);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, function() {
+            statusBadge.className = 'badge bg-success';
+            statusBadge.innerText = 'Live';
+            video.play();
+        });
+        hls.on(Hls.Events.ERROR, function(event, data) {
+            console.error("HLS Error:", data);
+            if (data.fatal) {
+                statusBadge.className = 'badge bg-danger';
+                statusBadge.innerText = 'Stream Error';
+            }
+        });
+    }
+    // HLS.js is not supported on platforms that do not have Media Source Extensions (MSE) enabled.
+    // When the browser has built-in HLS support (check using `canPlayType`), we can provide an HLS manifest (i.e. .m3u8 URL) directly to the video element through the `src` property.
+    // This is using the built-in support of the plain video element, without using HLS.js.
+    else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = videoSrc;
+        video.addEventListener('loadedmetadata', function() {
+            statusBadge.className = 'badge bg-success';
+            statusBadge.innerText = 'Live (Native)';
+            video.play();
+        });
+    } else {
+        statusBadge.className = 'badge bg-danger';
+        statusBadge.innerText = 'Browser Not Supported';
+    }
+</script>
+{% endblock %}

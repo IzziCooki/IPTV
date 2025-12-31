@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="mb-4">Browse by Country</h1>
+
+<div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
+    {% for country in countries %}
+    <div class="col">
+        <a href="/browse?country={{ country.code }}" class="card h-100 text-center text-decoration-none">
+            <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                <span class="display-4 mb-2">{{ country.flag }}</span>
+                <h6 class="card-title mb-0">{{ country.name }}</h6>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
