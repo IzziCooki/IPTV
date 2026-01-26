@@ -3,7 +3,7 @@
 This project provides both a command-line interface (CLI) and a web-based user interface to browse and watch free, public IPTV streams from around the world, utilizing data from the [iptv-org/api](https://github.com/iptv-org/api) project.
 
 # Demo
-Demo can be found here: http://4.242.33.5:5000/
+Demo can be found here: [http://4.242.33.5:5000/]
 
 ## Features
 
